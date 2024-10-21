@@ -69,6 +69,7 @@ EF Core can also [reverse engineer](https://learn.microsoft.com/en-us/ef/core/ma
 
 Tip: This application intentionally keeps things simple for clarity. [Connection strings](https://learn.microsoft.com/en-us/ef/core/miscellaneous/connection-strings) should not be stored in the code for production applications. You may also want to split each C# class into its own file.
 
+---
 ## Create the database
 
 The following steps use [migrations](https://learn.microsoft.com/en-us/ef/core/managing-schemas/migrations/) to create a database.

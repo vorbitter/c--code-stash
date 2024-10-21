@@ -12,9 +12,7 @@ Origens de associação com suporte:
 
 O manipulador de rota `GET` a seguir usa algumas dessas origens de associação de parâmetros:
 
-C#
-
-```
+```c#
 var builder = WebApplication.CreateBuilder(args);
 
 // Added as service
@@ -32,20 +30,18 @@ class Service { }
 
 A tabela a seguir mostra a relação entre os parâmetros usados no exemplo anterior e as origens de associação correspondentes.
 
-|Parâmetro|Origem da associação|
-|---|---|
-|`id`|valor da rota|
-|`page`|cadeia de caracteres de consulta|
-|`customHeader`|cabeçalho|
-|`service`|Fornecido pela injeção de dependência|
+| Parâmetro      | Origem da associação                  |
+| -------------- | ------------------------------------- |
+| `id`           | valor da rota                         |
+| `page`         | cadeia de caracteres de consulta      |
+| `customHeader` | cabeçalho                             |
+| `service`      | Fornecido pela injeção de dependência |
 
 Os métodos HTTP `GET`, `HEAD`, `OPTIONS`, e `DELETE` não se associam implicitamente a partir do corpo. Para associar a partir do corpo (como JSON) para esses métodos HTTP, [associe explicitamente](https://learn.microsoft.com/pt-br/aspnet/core/fundamentals/minimal-apis/parameter-binding?view=aspnetcore-8.0#explicit-parameter-binding) com [`[FromBody]`](https://learn.microsoft.com/pt-br/dotnet/api/microsoft.aspnetcore.mvc.frombodyattribute) ou leia de [HttpRequest](https://learn.microsoft.com/pt-br/dotnet/api/microsoft.aspnetcore.http.httprequest).
 
 O seguinte exemplo de manipulador de rota POST usa uma origem de associação de corpo (como JSON) para o parâmetro `person`:
 
-C#
-
-```
+```c#
 var builder = WebApplication.CreateBuilder(args);
 
 var app = builder.Build();
@@ -57,9 +53,7 @@ record Person(string Name, int Age);
 
 Os parâmetros nos exemplos anteriores são todos associados automaticamente a partir de dados de solicitação. Para demonstrar a conveniência que a associação de parâmetros fornece, os seguintes manipuladores de rota mostram como ler dados de solicitação diretamente da solicitação:
 
-C#
-
-```
+```c#
 app.MapGet("/{id}", (HttpRequest request) =>
 {
     var id = request.RouteValues["id"];
@@ -76,16 +70,11 @@ app.MapPost("/", async (HttpRequest request) =>
     // ...
 });
 ```
-
-[](https://learn.microsoft.com/pt-br/aspnet/core/fundamentals/minimal-apis/parameter-binding?view=aspnetcore-8.0#explicit-parameter-binding)
-
 ### Associação de parâmetro explícita
 
 Os atributos podem ser usados para declarar explicitamente de onde os parâmetros são associados.
 
-C#
-
-```
+```c#
 using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -107,22 +96,16 @@ class Service { }
 record Person(string Name, int Age);
 ```
 
-|Parâmetro|Origem da associação|
-|---|---|
-|`id`|valor de rota com o nome `id`|
-|`page`|cadeia de caracteres de consulta com o nome `"p"`|
-|`service`|Fornecido pela injeção de dependência|
-|`contentType`|cabeçalho com o nome `"Content-Type"`|
-
-[](https://learn.microsoft.com/pt-br/aspnet/core/fundamentals/minimal-apis/parameter-binding?view=aspnetcore-8.0#explicit-binding-from-form-values)
-
+| Parâmetro     | Origem da associação                              |
+| ------------- | ------------------------------------------------- |
+| `id`          | valor de rota com o nome `id`                     |
+| `page`        | cadeia de caracteres de consulta com o nome `"p"` |
+| `service`     | Fornecido pela injeção de dependência             |
+| `contentType` | cabeçalho com o nome `"Content-Type"`             |
 #### Associação explícita de valores de formulário
 
 O atributo [`[FromForm]`](https://learn.microsoft.com/pt-br/dotnet/api/microsoft.aspnetcore.mvc.fromformattribute) associa valores de formulário:
-
-C#
-
-```
+```c#
 app.MapPost("/todos", async ([FromForm] string name,
     [FromForm] Visibility visibility, IFormFile? attachment, TodoDb db) =>
 {
@@ -151,9 +134,7 @@ app.MapPost("/todos", async ([FromForm] string name,
 
 Uma alternativa é usar o atributo [`[AsParameters]`](https://learn.microsoft.com/pt-br/dotnet/api/microsoft.aspnetcore.http.asparametersattribute) com um tipo personalizado que tenha propriedades anotadas com `[FromForm]`. Por exemplo, o código a seguir associa de valores de formulário a propriedades do struct de registro `NewTodoRequest`:
 
-C#
-
-```
+```c#
 app.MapPost("/ap/todos", async ([AsParameters] NewTodoRequest request, TodoDb db) =>
 {
     var todo = new Todo
@@ -181,9 +162,8 @@ app.MapPost("/ap/todos", async ([AsParameters] NewTodoRequest request, TodoDb db
 // Remaining code removed for brevity.
 ```
 
-C#
 
-```
+```c#
 public record struct NewTodoRequest([FromForm] string Name,
     [FromForm] Visibility Visibility, IFormFile? Attachment);
 ```
@@ -191,16 +171,11 @@ public record struct NewTodoRequest([FromForm] string Name,
 Para obter mais informações, confira a seção sobre [AsParameters](https://learn.microsoft.com/pt-br/aspnet/core/fundamentals/minimal-apis/parameter-binding?view=aspnetcore-8.0#parameter-binding-for-argument-lists-with-asparameters) mais adiante neste artigo.
 
 O [código de exemplo completo](https://github.com/dotnet/AspNetCore.Docs.Samples/tree/main/fundamentals/minimal-apis/samples/IFormFile) está no repositório [AspNetCore.Docs.Samples](https://github.com/dotnet/AspNetCore.Docs.Samples).
-
-[](https://learn.microsoft.com/pt-br/aspnet/core/fundamentals/minimal-apis/parameter-binding?view=aspnetcore-8.0#secure-binding-from-iformfile-and-iformfilecollection)
-
 #### Associação segura do IFormFile e IFormFileCollection
 
 Há suporte para a associação do formulário complexo usando [IFormFile](https://learn.microsoft.com/pt-br/dotnet/api/microsoft.aspnetcore.http.iformfile) e [IFormFileCollection](https://learn.microsoft.com/pt-br/dotnet/api/microsoft.aspnetcore.http.iformfilecollection) usando o [`[FromForm]`](https://learn.microsoft.com/pt-br/dotnet/api/microsoft.aspnetcore.mvc.fromformattribute):
 
-C#
-
-```
+```c#
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -238,16 +213,11 @@ Os parâmetros associados à solicitação com `[FromForm]` incluem um [token an
 Para obter mais informações, consulte [Associação de formulário nas APIs mínimas](https://andrewlock.net/exploring-the-dotnet-8-preview-form-binding-in-minimal-apis/).
 
 O [código de exemplo completo](https://github.com/dotnet/AspNetCore.Docs.Samples/tree/main/fundamentals/minimal-apis/samples/FormBinding) está no repositório [AspNetCore.Docs.Samples](https://github.com/dotnet/AspNetCore.Docs.Samples).
-
-[](https://learn.microsoft.com/pt-br/aspnet/core/fundamentals/minimal-apis/parameter-binding?view=aspnetcore-8.0#parameter-binding-with-dependency-injection)
-
 ### Associação de parâmetros com injeção de dependência
 
 A associação de parâmetros para APIs mínimas vincula parâmetros por meio de [injeção de dependência](https://learn.microsoft.com/pt-br/aspnet/core/fundamentals/dependency-injection?view=aspnetcore-8.0) quando o tipo é configurado como serviço. Não é necessário aplicar explicitamente o atributo [`[FromServices]`](https://learn.microsoft.com/pt-br/dotnet/api/microsoft.aspnetcore.mvc.fromservicesattribute) a um parâmetro. No código a seguir, ambas as ações retornam a hora:
 
-C#
-
-```
+```c#
 using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -259,9 +229,6 @@ app.MapGet("/",   (               IDateTime dateTime) => dateTime.Now);
 app.MapGet("/fs", ([FromServices] IDateTime dateTime) => dateTime.Now);
 app.Run();
 ```
-
-[](https://learn.microsoft.com/pt-br/aspnet/core/fundamentals/minimal-apis/parameter-binding?view=aspnetcore-8.0#optional-parameters)
-
 ### Parâmetros opcionais
 
 Os parâmetros declarados em manipuladores de rota são tratados conforme a exigência:
@@ -269,9 +236,7 @@ Os parâmetros declarados em manipuladores de rota são tratados conforme a exig
 - Se uma solicitação corresponder à rota, o manipulador de rota só será executado se todos os parâmetros necessários forem fornecidos na solicitação.
 - O não fornecimento de todos os parâmetros necessários resulta em erro.
 
-C#
-
-```
+```c#
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 
@@ -280,17 +245,16 @@ app.MapGet("/products", (int pageNumber) => $"Requesting page {pageNumber}");
 app.Run();
 ```
 
-|URI|resultado|
-|---|---|
-|`/products?pageNumber=3`|retornou 3|
-|`/products`|`BadHttpRequestException`: o parâmetro obrigatório "int pageNumber" não foi fornecido a partir da cadeia de caracteres de consulta.|
-|`/products/1`|Erro HTTP 404, nenhuma rota correspondente|
+| URI                      | resultado                                                                                                                           |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `/products?pageNumber=3` | retornou 3                                                                                                                          |
+| `/products`              | `BadHttpRequestException`: o parâmetro obrigatório "int pageNumber" não foi fornecido a partir da cadeia de caracteres de consulta. |
+| `/products/1`            | Erro HTTP 404, nenhuma rota correspondente                                                                                          |
 
 Para tornar `pageNumber` opcional, defina o tipo como opcional ou forneça um valor padrão:
 
-C#
 
-```
+```c#
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 
@@ -303,17 +267,15 @@ app.MapGet("/products2", ListProducts);
 app.Run();
 ```
 
-|URI|resultado|
-|---|---|
-|`/products?pageNumber=3`|retornou 3|
-|`/products`|retornou 1|
-|`/products2`|retornou 1|
+| URI                      | resultado  |
+| ------------------------ | ---------- |
+| `/products?pageNumber=3` | retornou 3 |
+| `/products`              | retornou 1 |
+| `/products2`             | retornou 1 |
 
 O valor padrão e anulável anteriores aplica-se a todas as fontes:
 
-C#
-
-```
+```c#
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 
@@ -326,9 +288,7 @@ O código anterior chama o método com um produto nulo se nenhum corpo da solici
 
 **OBSERVAÇÃO**: se dados inválidos forem fornecidos e o parâmetro for anulável, o manipulador de rota _**não**_ será executado.
 
-C#
-
-```
+```c#
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 
@@ -337,59 +297,40 @@ app.MapGet("/products", (int? pageNumber) => $"Requesting page {pageNumber ?? 1}
 app.Run();
 ```
 
-|URI|resultado|
-|---|---|
-|`/products?pageNumber=3`|retornou `3`|
-|`/products`|retornou `1`|
-|`/products?pageNumber=two`|`BadHttpRequestException`: falha ao associar o parâmetro `"Nullable<int> pageNumber"` de "dois".|
-|`/products/two`|Erro HTTP 404, nenhuma rota correspondente|
+| URI                        | resultado                                                                                        |
+| -------------------------- | ------------------------------------------------------------------------------------------------ |
+| `/products?pageNumber=3`   | retornou `3`                                                                                     |
+| `/products`                | retornou `1`                                                                                     |
+| `/products?pageNumber=two` | `BadHttpRequestException`: falha ao associar o parâmetro `"Nullable<int> pageNumber"` de "dois". |
+| `/products/two`            | Erro HTTP 404, nenhuma rota correspondente                                                       |
 
 Obtenha mais informações na seção [Falhas de Associação](https://learn.microsoft.com/pt-br/aspnet/core/fundamentals/minimal-apis/parameter-binding?view=aspnetcore-8.0#bf).
-
-[](https://learn.microsoft.com/pt-br/aspnet/core/fundamentals/minimal-apis/parameter-binding?view=aspnetcore-8.0#special-types)
-
 ### Tipos especiais
 
 Os seguintes tipos são associados sem atributos explícitos:
 
 - [HttpContext](https://learn.microsoft.com/pt-br/dotnet/api/microsoft.aspnetcore.http.httpcontext): o contexto que contém todas as informações sobre a solicitação ou resposta HTTP atual:
-    
-    C#
-    
-
-- ```
+```
     app.MapGet("/", (HttpContext context) => context.Response.WriteAsync("Hello World"));
-    ```
+```
     
 - [HttpRequest](https://learn.microsoft.com/pt-br/dotnet/api/microsoft.aspnetcore.http.httprequest) e [HttpResponse](https://learn.microsoft.com/pt-br/dotnet/api/microsoft.aspnetcore.http.httpresponse): a solicitação HTTP e a resposta HTTP:
-    
-    C#
-    
-- ```
-    app.MapGet("/", (HttpRequest request, HttpResponse response) =>
-        response.WriteAsync($"Hello World {request.Query["name"]}"));
-    ```
-    
+
+```c#
+app.MapGet("/", (HttpRequest request, HttpResponse response) =>
+    response.WriteAsync($"Hello World {request.Query["name"]}"));
+```
+
 - [CancellationToken](https://learn.microsoft.com/pt-br/dotnet/api/system.threading.cancellationtoken): o token de cancelamento associado à solicitação HTTP atual:
-    
-    C#
-    
-- ```
-    app.MapGet("/", async (CancellationToken cancellationToken) => 
-        await MakeLongRunningRequestAsync(cancellationToken));
-    ```
-    
+```c#
+app.MapGet("/", async (CancellationToken cancellationToken) => 
+	await MakeLongRunningRequestAsync(cancellationToken));
+```
+
 - [ClaimsPrincipal](https://learn.microsoft.com/pt-br/dotnet/api/system.security.claims.claimsprincipal): o usuário associado à solicitação, associado de [HttpContext.User](https://learn.microsoft.com/pt-br/dotnet/api/microsoft.aspnetcore.http.httpcontext.user):
-    
-    C#
-    
-
-- ```
-    app.MapGet("/", (ClaimsPrincipal user) => user.Identity.Name);
-    ```
-    
-
-[](https://learn.microsoft.com/pt-br/aspnet/core/fundamentals/minimal-apis/parameter-binding?view=aspnetcore-8.0#bind-the-request-body-as-a-stream-or-pipereader)
+```c#
+app.MapGet("/", (ClaimsPrincipal user) => user.Identity.Name);
+```
 
 #### Associar o corpo da solicitação como um `Stream` ou `PipeReader`
 
@@ -402,9 +343,7 @@ Por exemplo, os dados podem ser enfileirados no [Armazenamento de Filas do Azure
 
 O código a seguir implementa uma fila em segundo plano:
 
-C#
-
-```
+```c#
 using System.Text.Json;
 using System.Threading.Channels;
 
@@ -450,9 +389,7 @@ class Person
 
 O código a seguir associa o corpo da solicitação a um `Stream`:
 
-C#
-
-```
+```c#
 app.MapPost("/register", async (HttpRequest req, Stream body,
                                  Channel<ReadOnlyMemory<byte>> queue) =>
 {
@@ -491,9 +428,7 @@ app.MapPost("/register", async (HttpRequest req, Stream body,
 
 O código a seguir mostra o arquivo `Program.cs` completo:
 
-C#
-
-```
+```c#
 using System.Threading.Channels;
 using BackgroundQueueService;
 
@@ -558,16 +493,12 @@ app.Run();
 - Ao ler dados, o `Stream` é o mesmo objeto que `HttpRequest.Body`.
 - O corpo da solicitação não é armazenado em buffer por padrão. Depois que o corpo for lido, não será possível retrocedê-lo. O fluxo não pode ser lido várias vezes.
 - O `Stream` e `PipeReader` não são utilizáveis fora do manipulador de ação mínima, pois os buffers subjacentes serão descartados ou reutilizados.
-
-[](https://learn.microsoft.com/pt-br/aspnet/core/fundamentals/minimal-apis/parameter-binding?view=aspnetcore-8.0#file-uploads-using-iformfile-and-iformfilecollection)
-
 #### Uploads de arquivos usando IFormFile e IFormFileCollection
 
 O código a seguir usa [IFormFile](https://learn.microsoft.com/pt-br/dotnet/api/microsoft.aspnetcore.http.iformfile) e [IFormFileCollection](https://learn.microsoft.com/pt-br/dotnet/api/microsoft.aspnetcore.http.iformfilecollection) para carregar o arquivo:
 
-C#
 
-```
+```c#
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 
@@ -596,18 +527,13 @@ app.Run();
 ```
 
 Há suporte a solicitações de upload de arquivos autenticados com o uso de um [cabeçalho de autorização](https://developer.mozilla.org/docs/Web/HTTP/Headers/Authorization), um [certificado de cliente](https://learn.microsoft.com/pt-br/aspnet/core/security/authentication/certauth) ou um cabeçalho de cookie.
-
-[](https://learn.microsoft.com/pt-br/aspnet/core/fundamentals/minimal-apis/parameter-binding?view=aspnetcore-8.0#binding-to-forms-with-iformcollection-iformfile-and-iformfilecollection)
-
 #### Associação a formulários com IFormCollection, IFormFile e IFormFileCollection
 
 Há suporte para associação de parâmetros baseados em formulário usando [IFormCollection](https://learn.microsoft.com/pt-br/dotnet/api/microsoft.aspnetcore.http.iformcollection), [IFormFile](https://learn.microsoft.com/pt-br/dotnet/api/microsoft.aspnetcore.http.iformfile) e [IFormFileCollection](https://learn.microsoft.com/pt-br/dotnet/api/microsoft.aspnetcore.http.iformfilecollection). Metadados do [OpenAPI](https://learn.microsoft.com/pt-br/aspnet/core/fundamentals/openapi/aspnetcore-openapi?view=aspnetcore-8.0) são inferidos para parâmetros de formulário para dar suporte à integração com a[interface do usuário do Swagger](https://learn.microsoft.com/pt-br/aspnet/core/tutorials/web-api-help-pages-using-swagger?view=aspnetcore-8.0).
 
 O código a seguir carrega arquivos usando a associação inferida do tipo `IFormFile`:
 
-C#
-
-```
+```c#
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -664,9 +590,7 @@ app.Run();
 
 _**Aviso:**_ Ao implementar formulários, o aplicativo _**deve evitar**_ [ataques de falsificação de solicitação entre sites (XSRF/CSRF)](https://learn.microsoft.com/pt-br/aspnet/core/security/anti-request-forgery?view=aspnetcore-8.0&preserve-view=true&view=aspnetcore-8.0#afwma). No código anterior, o serviço [IAntiforgery](https://learn.microsoft.com/pt-br/dotnet/api/microsoft.aspnetcore.antiforgery.iantiforgery) é usado para evitar ataques XSRF gerando e validando um token antifalsificação:
 
-C#
-
-```
+```c#
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -724,9 +648,6 @@ app.Run();
 Para obter mais informações sobre ataques XSRF, confira [Antifalsificação com APIs mínimas](https://learn.microsoft.com/pt-br/aspnet/core/security/anti-request-forgery?view=aspnetcore-8.0&preserve-view=true&view=aspnetcore-8.0#afwma)
 
 Para obter mais informações, consulte [Vinculação de formulário em APIs mínimas](https://andrewlock.net/exploring-the-dotnet-8-preview-form-binding-in-minimal-apis/);
-
-[](https://learn.microsoft.com/pt-br/aspnet/core/fundamentals/minimal-apis/parameter-binding?view=aspnetcore-8.0#bind-to-collections-and-complex-types-from-forms)
-
 ### Associar a coleções e tipos complexos de formulários
 
 A associação tem suporte para:
@@ -738,10 +659,7 @@ O código a seguir mostra:
 
 - Um ponto de extremidade mínimo que associa uma entrada de formulário de várias partes a um objeto complexo.
 - Como usar os serviços antifalsificação para dar suporte à geração e à validação de tokens antifalsificação.
-
-C#
-
-```
+```c#
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -1010,9 +928,7 @@ app.MapGet("/todoitems/{id}",
 
 Considere o ponto de extremidade `GET` a seguir:
 
-C#
-
-```
+```c#
 app.MapGet("/todoitems/{id}",
                              async (int Id, TodoDb Db) =>
     await Db.Todos.FindAsync(Id)
@@ -1023,9 +939,8 @@ app.MapGet("/todoitems/{id}",
 
 O seguinte `struct` pode ser usado para substituir os parâmetros realçados anteriores:
 
-C#
 
-```
+```c#
 struct TodoItemRequest
 {
     public int Id { get; set; }
@@ -1035,9 +950,7 @@ struct TodoItemRequest
 
 O ponto de extremidade refatorado `GET` usa o anterior `struct` com o atributo [AsParameters](https://learn.microsoft.com/pt-br/dotnet/api/microsoft.aspnetcore.http.asparametersattribute?view=aspnetcore-7.0&preserve-view=true):
 
-C#
-
-```
+```c#
 app.MapGet("/ap/todoitems/{id}",
                                 async ([AsParameters] TodoItemRequest request) =>
     await request.Db.Todos.FindAsync(request.Id)
@@ -1048,9 +961,7 @@ app.MapGet("/ap/todoitems/{id}",
 
 O código a seguir mostra pontos de extremidade adicionais no aplicativo:
 
-C#
-
-```
+```c#
 app.MapPost("/todoitems", async (TodoItemDTO Dto, TodoDb Db) =>
 {
     var todoItem = new Todo
@@ -1094,9 +1005,7 @@ app.MapDelete("/todoitems/{id}", async (int Id, TodoDb Db) =>
 
 As seguintes classes são usadas para refatorar as listas de parâmetros:
 
-C#
-
-```
+```c#
 class CreateTodoItemRequest
 {
     public TodoItemDTO Dto { get; set; } = default!;
@@ -1112,10 +1021,7 @@ class EditTodoItemRequest
 ```
 
 O código a seguir mostra os pontos de extremidade refatorados usando `AsParameters`, os `struct` e classes anteriores:
-
-C#
-
-```
+```c#
 app.MapPost("/ap/todoitems", async ([AsParameters] CreateTodoItemRequest request) =>
 {
     var todoItem = new Todo
@@ -1159,9 +1065,7 @@ app.MapDelete("/ap/todoitems/{id}", async ([AsParameters] TodoItemRequest reques
 
 Os seguintes tipos [`record`](https://learn.microsoft.com/pt-br/dotnet/csharp/language-reference/builtin-types/record) podem ser usados para substituir os parâmetros anteriores:
 
-C#
-
-```
+```c#
 record TodoItemRequest(int Id, TodoDb Db);
 record CreateTodoItemRequest(TodoItemDTO Dto, TodoDb Db);
 record EditTodoItemRequest(int Id, TodoItemDTO Dto, TodoDb Db);
@@ -1171,33 +1075,24 @@ Usar um `struct` com `AsParameters` pode ser mais eficaz do que usar um tipo `re
 
 O [código de exemplo completo](https://github.com/dotnet/AspNetCore.Docs.Samples/tree/main/fundamentals/minimal-apis/samples/arg-lists) no repositório [AspNetCore.Docs.Samples](https://github.com/dotnet/AspNetCore.Docs.Samples).
 
-[](https://learn.microsoft.com/pt-br/aspnet/core/fundamentals/minimal-apis/parameter-binding?view=aspnetcore-8.0#custom-binding)
-
 ### Associação personalizado
 
 Há duas maneiras de personalizar a associação de parâmetros:
 
 1. Para as origens da associação de rota, de consulta e de cabeçalho, associe tipos personalizados adicionando um método estático `TryParse` para o tipo.
 2. Controlar o processo de associação implementando um método `BindAsync` em um tipo.
-
-[](https://learn.microsoft.com/pt-br/aspnet/core/fundamentals/minimal-apis/parameter-binding?view=aspnetcore-8.0#tryparse)
-
 #### TryParse
 
 `TryParse` tem duas APIs:
 
-C#
-
-```
+```c#
 public static bool TryParse(string value, out T result);
 public static bool TryParse(string value, IFormatProvider provider, out T result);
 ```
 
 O código a seguir exibe `Point: 12.3, 10.1` com o URI `/map?Point=12.3,10.1`:
 
-C#
-
-```
+```c#
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 
@@ -1231,25 +1126,18 @@ public class Point
     }
 }
 ```
-
-[](https://learn.microsoft.com/pt-br/aspnet/core/fundamentals/minimal-apis/parameter-binding?view=aspnetcore-8.0#bindasync)
-
 #### BindAsync
 
 `BindAsync` tem as seguintes APIs:
 
-C#
-
-```
+```c#
 public static ValueTask<T?> BindAsync(HttpContext context, ParameterInfo parameter);
 public static ValueTask<T?> BindAsync(HttpContext context);
 ```
 
 O código a seguir exibe `SortBy:xyz, SortDirection:Desc, CurrentPage:99` com o URI `/products?SortBy=xyz&SortDir=Desc&Page=99`:
 
-C#
-
-```
+```c#
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -1297,9 +1185,6 @@ public enum SortDirection
     Desc
 }
 ```
-
-[](https://learn.microsoft.com/pt-br/aspnet/core/fundamentals/minimal-apis/parameter-binding?view=aspnetcore-8.0#binding-failures)
-
 ### Falhas de associação
 
 Quando a associação falha, a estrutura registra uma mensagem de depuração e retorna vários códigos de status ao cliente, dependendo do modo de falha.
@@ -1344,21 +1229,15 @@ As regras que determinam uma origem de associação de um parâmetro:
 5. Se o tipo de parâmetro for um serviço fornecido pela injeção de dependência, ele usará esse serviço como origem.
 6. O parâmetro se origina do corpo.
 
-[](https://learn.microsoft.com/pt-br/aspnet/core/fundamentals/minimal-apis/parameter-binding?view=aspnetcore-8.0#configure-json-deserialization-options-for-body-binding)
-
 ### Configurar opções de desserialização JSON para associação de corpo
 
 A origem da associação do corpo usa [System.Text.Json](https://learn.microsoft.com/pt-br/dotnet/api/system.text.json) para desserialização. _**Não**_ é possível alterar esse padrão, mas as opções de serialização e desserialização JSON podem ser configuradas.
-
-[](https://learn.microsoft.com/pt-br/aspnet/core/fundamentals/minimal-apis/parameter-binding?view=aspnetcore-8.0#configure-json-deserialization-options-globally)
 
 #### Configurar opções de desserialização JSON globalmente
 
 As opções que se aplicam globalmente a um aplicativo podem ser configuradas por meio da invocação de [ConfigureHttpJsonOptions](https://learn.microsoft.com/pt-br/dotnet/api/microsoft.extensions.dependencyinjection.httpjsonserviceextensions.configurehttpjsonoptions). O exemplo a seguir inclui campos públicos e formata a saída JSON.
 
-C#
-
-```
+```c#
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.ConfigureHttpJsonOptions(options => {
@@ -1396,16 +1275,10 @@ class Todo {
 ```
 
 Como o código de exemplo configura a serialização e a desserialização, ele pode ler `NameField` e incluir `NameField` na saída JSON.
-
-[](https://learn.microsoft.com/pt-br/aspnet/core/fundamentals/minimal-apis/parameter-binding?view=aspnetcore-8.0#configure-json-deserialization-options-for-an-endpoint)
-
 #### Configurar opções de desserialização JSON para um ponto de extremidade
 
 [ReadFromJsonAsync](https://learn.microsoft.com/pt-br/dotnet/api/microsoft.aspnetcore.http.httprequestjsonextensions.readfromjsonasync) tem sobrecargas que aceitam um objeto [JsonSerializerOptions](https://learn.microsoft.com/pt-br/dotnet/api/system.text.json.jsonserializeroptions). O exemplo a seguir inclui campos públicos e formata a saída JSON.
-
-C#
-
-```
+```c#
 using System.Text.Json;
 
 var app = WebApplication.Create();
@@ -1449,9 +1322,6 @@ class Todo
 ```
 
 Como o código anterior aplica as opções personalizadas somente à desserialização, o JSON de saída exclui `NameField`.
-
-[](https://learn.microsoft.com/pt-br/aspnet/core/fundamentals/minimal-apis/parameter-binding?view=aspnetcore-8.0#read-the-request-body)
-
 ### Leia o corpo da solicitação.
 
 Leia o corpo da solicitação diretamente usando um parâmetro [HttpContext](https://learn.microsoft.com/pt-br/dotnet/api/microsoft.aspnetcore.http.httpcontext) ou [HttpRequest](https://learn.microsoft.com/pt-br/dotnet/api/microsoft.aspnetcore.http.httprequest):

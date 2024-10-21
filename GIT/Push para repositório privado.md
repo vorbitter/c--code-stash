@@ -1,0 +1,1 @@
+Use o terminal do vscode, caso não funcione use ssh ou torne o repositório público.

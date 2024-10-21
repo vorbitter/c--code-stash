@@ -1,14 +1,9 @@
 Essa página inclui informações adicionais sobre como usar dados espaciais com o provedor de banco de dados SQLite. Para obter informações de caráter geral sobre como usar dados espaciais no EF Core, consulte a documentação principal relativa a [Dados Espaciais](https://learn.microsoft.com/pt-br/ef/core/modeling/spatial).
-
-[](https://learn.microsoft.com/pt-br/ef/core/providers/sqlite/spatial#installing-spatialite)
-
 ## Como instalar o SpatiaLite
 
 No Windows, a biblioteca nativa mod_spatialite é distribuída como uma dependência do pacote NuGet. Outras plataformas precisam instalá-la separadamente. De modo geral, isso é feito usando um gerenciador de pacotes de software. Por exemplo, você pode usar o APT no Debian e no Ubuntu; e o Homebrew no MacOS.
 
-Bash
-
-```
+```bash
 # Debian/Ubuntu
 apt-get install libsqlite3-mod-spatialite
 
